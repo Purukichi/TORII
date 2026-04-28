@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 :root{
   --bg:#ffffff;
   --fg:#0a0a0a;
@@ -14,12 +16,16 @@ html,body{height:100%}
 body{
   background:var(--bg);
   color:var(--fg);
-  font-family:"Space Grotesk","Noto Sans JP",-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-feature-settings:"tnum","ss01";
+  font-family:Helvetica,"Helvetica Neue",Arial,
+              "MS Gothic","ＭＳ ゴシック",Osaka,
+              "Microsoft JhengHei","微軟正黑體",
+              SimHei,"黑体",
+              sans-serif;
+  font-feature-settings:"tnum";
   -webkit-font-smoothing:antialiased;
-  letter-spacing:-0.005em;
+  letter-spacing:0;
   font-size:14px;
-  line-height:1.4;
+  line-height:1.45;
 }
 button,a{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-decoration:none}
 svg{display:block;fill:currentColor;width:100%;height:100%}
@@ -216,14 +222,36 @@ img{display:block;max-width:100%;height:auto}
 }
 .dl-thumb svg{width:18px;height:18px}
 .dl-info{display:flex;flex-direction:column;gap:2px}
-.dl-info .h{font-weight:600;font-size:14px;letter-spacing:-.005em}
-.dl-info .s{font-size:10px;color:var(--mute);letter-spacing:.18em;text-transform:uppercase;font-weight:500}
+.dl-info .h{font-weight:700;font-size:14px;letter-spacing:0}
+.dl-info .s{font-size:10px;color:var(--mute);letter-spacing:.18em;text-transform:uppercase;font-weight:700}
 .dl-act{
   width:36px;height:36px;display:grid;place-items:center;
   border:1px solid var(--line-strong);
 }
 .dl-act svg{width:14px;height:14px}
 .dl:hover .dl-act{background:var(--fg);color:var(--bg)}
+
+/* Unlocked state: hide gates, hero-size the download ------- */
+.modal.unlocked #mFollowBlock{display:none}
+.modal.unlocked #mDlBlock{padding:32px var(--pad)}
+.modal.unlocked .dl-list{border-top:0}
+.modal.unlocked .dl{
+  grid-template-columns:1fr auto;
+  padding:24px 22px;
+  background:var(--fg);color:var(--bg);
+  border-bottom:0;
+  transition:transform .15s ease;
+}
+.modal.unlocked .dl:hover{transform:translateY(-2px)}
+.modal.unlocked .dl-thumb{display:none}
+.modal.unlocked .dl-info .h{font-size:18px;font-weight:700;color:var(--bg)}
+.modal.unlocked .dl-info .s{color:rgba(255,255,255,.55)}
+.modal.unlocked .dl-act{
+  width:48px;height:48px;
+  border:1px solid var(--bg);background:transparent;color:var(--bg);
+}
+.modal.unlocked .dl-act svg{width:18px;height:18px}
+.modal.unlocked .dl:hover .dl-act{background:var(--accent);border-color:var(--accent);color:var(--bg)}
 
 /* Responsive ---------------------------------------------- */
 @media (max-width:720px){

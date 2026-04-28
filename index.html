@@ -4,9 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>P-GATE</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
 <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230a0a0a'/><text x='16' y='22' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='18' text-anchor='middle' fill='%23fff'>P</text></svg>" />
 </head>
@@ -61,7 +58,7 @@
 
     <div class="sheet-cover" id="mCover"></div>
 
-    <div class="sheet-block">
+    <div class="sheet-block" id="mFollowBlock">
       <div class="block-head">
         <span>FOLLOW REQUIRED</span>
         <span><span id="mDone">00</span>/<span id="mTotal">00</span></span>
@@ -69,7 +66,7 @@
       <ul class="gate-list" id="mGates"></ul>
     </div>
 
-    <div class="sheet-block">
+    <div class="sheet-block" id="mDlBlock">
       <div class="block-head">
         <span>DOWNLOAD</span>
         <span class="state-tag" id="mDlState">LOCKED</span>
