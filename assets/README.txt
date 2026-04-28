@@ -1,9 +1,6 @@
-Place the 5 PNG files here with the following exact names:
+Place these files in this directory:
 
-  01.png   -- 16:9 landscape variant 1
-  02.png   -- 16:9 landscape variant 2
-  03.png   -- 21:9 ultrawide
-  04.png   -- 9:21 mobile / vertical
-  05.png   -- 1:1 square (used as the gallery thumbnail)
+  WENXIANG_THUM.jpg   -- gallery thumbnail / modal cover
+  WENXIANG.zip        -- the unlock reward (downloaded after all 4 follows)
 
 To change filenames or add more items, edit /data.js.

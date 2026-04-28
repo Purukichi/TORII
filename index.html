@@ -6,9 +6,9 @@
 <title>P-GATE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
-<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230a0a0a'/><text x='16' y='22' font-family='Helvetica,Arial,sans-serif' font-weight='800' font-size='18' text-anchor='middle' fill='%23fff'>P</text></svg>" />
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%230a0a0a'/><text x='16' y='22' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='18' text-anchor='middle' fill='%23fff'>P</text></svg>" />
 </head>
 <body>
 
@@ -40,53 +40,20 @@
     <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
       <path d="M6 6l12 12M18 6L6 18"/>
     </symbol>
-    <symbol id="i-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-      <path d="M4 4v6h6M20 12a8 8 0 1 1-3-6.2L20 8"/>
-    </symbol>
   </defs>
 </svg>
 
 <header class="bar">
-  <div class="bar-l">
-    <span class="mark">P</span>
-    <span class="brand">P&middot;GATE</span>
-  </div>
-  <div class="bar-c">
-    <span class="meta">SOCIAL ACCESS GATE</span>
-  </div>
-  <div class="bar-r">
-    <span class="counter mono">
-      <span id="counterNum">00</span><span class="sep">/</span><span id="counterTotal">00</span>
-    </span>
-    <button class="btn-bare" id="resetBtn" aria-label="reset">
-      <svg><use href="#i-reset"/></svg>
-    </button>
-  </div>
+  <span class="brand">P&middot;GATE</span>
 </header>
 
-<section class="section-head">
-  <div class="sh-l">
-    <span class="kicker mono">INDEX &mdash; 01</span>
-    <h1 class="h1">COLLECTION</h1>
-  </div>
-  <div class="sh-r mono">
-    <span id="indexCount">00</span> ITEMS
-  </div>
-</section>
-
 <main class="grid" id="grid"></main>
-
-<footer class="foot mono">
-  <span>P&middot;GATE / v1</span>
-  <span>&copy; PURUKICHI</span>
-</footer>
 
 <div class="modal" id="modal" hidden>
   <div class="modal-bd" data-close></div>
   <div class="modal-sheet">
     <div class="sheet-bar">
-      <span class="mono" id="mIndex">01</span>
-      <span class="mono" id="mTitle"></span>
+      <span class="sheet-title" id="mTitle"></span>
       <button class="btn-bare" data-close aria-label="close">
         <svg><use href="#i-close"/></svg>
       </button>
@@ -95,15 +62,15 @@
     <div class="sheet-cover" id="mCover"></div>
 
     <div class="sheet-block">
-      <div class="block-head mono">
+      <div class="block-head">
         <span>FOLLOW REQUIRED</span>
         <span><span id="mDone">00</span>/<span id="mTotal">00</span></span>
       </div>
       <ul class="gate-list" id="mGates"></ul>
     </div>
 
-    <div class="sheet-block" id="mDlBlock">
-      <div class="block-head mono">
+    <div class="sheet-block">
+      <div class="block-head">
         <span>DOWNLOAD</span>
         <span class="state-tag" id="mDlState">LOCKED</span>
       </div>

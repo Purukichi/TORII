@@ -27,14 +27,10 @@
   /* ---------- grid ---------- */
   function renderGrid() {
     grid.innerHTML = "";
-    DATA.forEach((p, i) => grid.appendChild(card(p, i)));
-    const unlocked = DATA.filter(isUnlocked).length;
-    $("counterNum").textContent = pad2(unlocked);
-    $("counterTotal").textContent = pad2(DATA.length);
-    $("indexCount").textContent = pad2(DATA.length);
+    DATA.forEach((p) => grid.appendChild(card(p)));
   }
 
-  function card(p, i) {
+  function card(p) {
     const unlocked = isUnlocked(p);
     const done = clearedCount(p);
     const total = p.gates.length;
@@ -44,32 +40,26 @@
     el.innerHTML = `
       <div class="card-img">
         <img src="${esc(p.cover)}" alt="" loading="lazy"
-             onerror="this.style.display='none';this.nextElementSibling && (this.nextElementSibling.style.display='grid')">
-        <div class="pl" style="display:none">${esc(p.cover)}</div>
-        <div class="ribbon">№ ${pad2(i + 1)}</div>
+             onerror="this.style.visibility='hidden'">
         <div class="lockmark">${use(unlocked ? "i-unlock" : "i-lock")}</div>
       </div>
       <div class="card-meta">
-        <div class="card-title">
-          <span class="t">${esc(p.title)}</span>
-          <span class="n">${pad2(done)}/${pad2(total)}</span>
-        </div>
+        <div class="card-title">${esc(p.title)}</div>
         <div class="card-svcs">
           ${p.gates.map(g => `<span class="svc-pip ${isFollowed(p, g) ? "done" : ""}">${use("i-" + g.svc)}</span>`).join("")}
         </div>
         <div class="card-bar"><i style="width:${(done / total) * 100}%"></i></div>
       </div>
     `;
-    el.addEventListener("click", () => openModal(p, i));
+    el.addEventListener("click", () => openModal(p));
     return el;
   }
 
   /* ---------- modal ---------- */
   let active = null;
-  let activeIdx = 0;
 
-  function openModal(p, i) {
-    active = p; activeIdx = i;
+  function openModal(p) {
+    active = p;
     paint();
     modal.hidden = false;
     document.body.style.overflow = "hidden";
@@ -88,12 +78,11 @@
     modal.classList.toggle("unlocked", unlocked);
     modal.classList.toggle("locked", !unlocked);
 
-    $("mIndex").textContent = `№ ${pad2(activeIdx + 1)}`;
     $("mTitle").textContent = p.title;
 
     const cov = $("mCover");
     cov.innerHTML = `
-      <img src="${esc(p.cover)}" alt="">
+      <img src="${esc(p.cover)}" alt="" onerror="this.style.visibility='hidden'">
       <div class="stamp">${use(unlocked ? "i-unlock" : "i-lock")}<span>${unlocked ? "UNLOCKED" : "LOCKED"}</span></div>
     `;
 
@@ -121,14 +110,13 @@
 
     $("mDlState").textContent = unlocked ? "UNLOCKED" : "LOCKED";
     const dl = $("mDownloads");
-    const fname = (src) => src.split("/").pop();
     dl.innerHTML = p.files.map((f) => `
       <li>
         <a class="dl" ${unlocked ? `href="${esc(f.src)}" download` : `aria-disabled="true"`}>
-          <div class="dl-thumb"><img src="${esc(f.src)}" alt="" loading="lazy"></div>
+          <div class="dl-thumb">${use("i-dl")}</div>
           <div class="dl-info">
             <div class="h">${esc(f.label)}</div>
-            <div class="s">${esc(f.size)} &middot; ${esc(fname(f.src))}</div>
+            <div class="s">${esc(f.size)}</div>
           </div>
           <div class="dl-act">${use(unlocked ? "i-dl" : "i-lock")}</div>
         </a>
@@ -166,14 +154,6 @@
     if (t && t.closest && t.closest("[data-close]")) closeModal();
   });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) closeModal(); });
-
-  /* reset */
-  $("resetBtn").addEventListener("click", () => {
-    Object.keys(state).forEach((k) => delete state[k]);
-    save();
-    renderGrid();
-    if (!modal.hidden) paint();
-  });
 
   renderGrid();
 })();
