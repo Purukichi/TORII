@@ -1,220 +1,178 @@
 (() => {
-  const STORAGE_KEY = "pgate.followed.v1";
+  const STORAGE_KEY = "pgate.followed.v2";
   const DATA = window.PGATE_DATA || [];
 
-  const grid = document.getElementById("grid");
-  const modal = document.getElementById("modal");
-  const counterNum = document.getElementById("counterNum");
-  const counterTotal = document.getElementById("counterTotal");
-  const resetBtn = document.getElementById("resetBtn");
+  const $ = (id) => document.getElementById(id);
+  const grid = $("grid");
+  const modal = $("modal");
 
-  const state = loadState();
+  const state = load();
 
-  function loadState() {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    } catch {
-      return {};
-    }
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+    catch { return {}; }
   }
-  function saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
-  function gateKey(p, g) {
-    return `${p.id}::${g.svc}::${g.handle}`;
-  }
-  function isFollowed(p, g) {
-    return !!state[gateKey(p, g)];
-  }
-  function setFollowed(p, g, v) {
-    if (v) state[gateKey(p, g)] = Date.now();
-    else delete state[gateKey(p, g)];
-    saveState();
-  }
-  function isUnlocked(p) {
-    return p.gates.every((g) => isFollowed(p, g));
-  }
-  function followedCount(p) {
-    return p.gates.filter((g) => isFollowed(p, g)).length;
-  }
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-  function svgUse(id, cls = "") {
-    return `<svg class="${cls}"><use href="#${id}"/></svg>`;
-  }
+  const gateKey = (p, g) => `${p.id}::${g.svc}::${g.handle}`;
+  const isFollowed = (p, g) => !!state[gateKey(p, g)];
+  const setFollowed = (p, g, v) => { v ? state[gateKey(p, g)] = Date.now() : delete state[gateKey(p, g)]; save(); };
+  const clearedCount = (p) => p.gates.filter((g) => isFollowed(p, g)).length;
+  const isUnlocked = (p) => clearedCount(p) === p.gates.length;
 
-  function kindGlyph(kind) {
-    return ({ music: "i-music", art: "i-art", video: "i-video", data: "i-data" })[kind] || "i-data";
-  }
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const use = (id, cls = "") => `<svg class="${cls}"><use href="#${id}"/></svg>`;
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 
+  /* ---------- grid ---------- */
   function renderGrid() {
     grid.innerHTML = "";
-    DATA.forEach((p) => grid.appendChild(renderCard(p)));
+    DATA.forEach((p, i) => grid.appendChild(card(p, i)));
     const unlocked = DATA.filter(isUnlocked).length;
-    counterNum.textContent = unlocked;
-    counterTotal.textContent = DATA.length;
+    $("counterNum").textContent = pad2(unlocked);
+    $("counterTotal").textContent = pad2(DATA.length);
+    $("indexCount").textContent = pad2(DATA.length);
   }
 
-  function renderCard(p) {
+  function card(p, i) {
     const unlocked = isUnlocked(p);
-    const done = followedCount(p);
+    const done = clearedCount(p);
     const total = p.gates.length;
-
     const el = document.createElement("button");
     el.className = `card ${unlocked ? "unlocked" : "locked"}`;
-    el.style.setProperty("--c1", p.c1);
-    el.style.setProperty("--c2", p.c2);
-    el.setAttribute("aria-label", p.id);
-
+    el.setAttribute("aria-label", p.title);
     el.innerHTML = `
-      <div class="card-cover">
-        ${svgUse(kindGlyph(p.kind), "glyph")}
+      <div class="card-img">
+        <img src="${esc(p.cover)}" alt="" loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling && (this.nextElementSibling.style.display='grid')">
+        <div class="pl" style="display:none">${esc(p.cover)}</div>
+        <div class="ribbon">№ ${pad2(i + 1)}</div>
+        <div class="lockmark">${use(unlocked ? "i-unlock" : "i-lock")}</div>
       </div>
-      <div class="card-overlay">
-        <div class="lock-badge">
-          ${svgUse(unlocked ? "i-unlock" : "i-lock")}
+      <div class="card-meta">
+        <div class="card-title">
+          <span class="t">${esc(p.title)}</span>
+          <span class="n">${pad2(done)}/${pad2(total)}</span>
         </div>
-        <div class="gate-row">
-          ${p.gates
-            .map(
-              (g) =>
-                `<span class="gate-chip ${isFollowed(p, g) ? "done" : ""}" data-svc="${g.svc}">
-                   ${svgUse("i-" + g.svc)}
-                 </span>`
-            )
-            .join("")}
+        <div class="card-svcs">
+          ${p.gates.map(g => `<span class="svc-pip ${isFollowed(p, g) ? "done" : ""}">${use("i-" + g.svc)}</span>`).join("")}
         </div>
+        <div class="card-bar"><i style="width:${(done / total) * 100}%"></i></div>
       </div>
-      <div class="progress"><i style="width:${(done / total) * 100}%"></i></div>
     `;
-
-    el.addEventListener("click", () => openModal(p));
+    el.addEventListener("click", () => openModal(p, i));
     return el;
   }
 
-  /* ===== Modal ===== */
-  let activeProduct = null;
+  /* ---------- modal ---------- */
+  let active = null;
+  let activeIdx = 0;
 
-  function openModal(p) {
-    activeProduct = p;
-    paintModal();
+  function openModal(p, i) {
+    active = p; activeIdx = i;
+    paint();
     modal.hidden = false;
     document.body.style.overflow = "hidden";
   }
   function closeModal() {
     modal.hidden = true;
-    activeProduct = null;
+    active = null;
     document.body.style.overflow = "";
     renderGrid();
   }
 
-  function paintModal() {
-    const p = activeProduct;
+  function paint() {
+    const p = active;
     if (!p) return;
     const unlocked = isUnlocked(p);
     modal.classList.toggle("unlocked", unlocked);
     modal.classList.toggle("locked", !unlocked);
 
-    const cover = document.getElementById("mCover");
-    cover.className = "cover";
-    cover.style.setProperty("--c1", p.c1);
-    cover.style.setProperty("--c2", p.c2);
-    cover.innerHTML = svgUse(kindGlyph(p.kind), "glyph");
+    $("mIndex").textContent = `№ ${pad2(activeIdx + 1)}`;
+    $("mTitle").textContent = p.title;
 
-    const stateEl = document.getElementById("mState");
-    stateEl.innerHTML = svgUse(unlocked ? "i-unlock" : "i-lock", "lock-icon");
+    const cov = $("mCover");
+    cov.innerHTML = `
+      <img src="${esc(p.cover)}" alt="">
+      <div class="stamp">${use(unlocked ? "i-unlock" : "i-lock")}<span>${unlocked ? "UNLOCKED" : "LOCKED"}</span></div>
+    `;
 
-    const gates = document.getElementById("mGates");
-    gates.innerHTML = p.gates.map((g, i) => renderGate(p, g, i)).join("");
+    const done = clearedCount(p), total = p.gates.length;
+    $("mDone").textContent = pad2(done);
+    $("mTotal").textContent = pad2(total);
 
-    gates.querySelectorAll(".gate").forEach((row, i) => {
-      const g = p.gates[i];
-      row.addEventListener("click", () => onGateClick(p, g, row));
+    const list = $("mGates");
+    list.innerHTML = p.gates.map((g, gi) => `
+      <li class="gate ${isFollowed(p, g) ? "done" : "pending"}" data-i="${gi}">
+        <div class="gate-svc">${use("i-" + g.svc)}</div>
+        <div class="gate-info">
+          <div class="h">${esc(g.handle)}</div>
+          <div class="s">${g.svc === "x" ? "X" : "YOUTUBE"}</div>
+        </div>
+        <div class="gate-act">${use(isFollowed(p, g) ? "i-check" : "i-arrow")}</div>
+      </li>
+    `).join("");
+    list.querySelectorAll(".gate").forEach((row) => {
+      row.addEventListener("click", () => {
+        const g = p.gates[+row.dataset.i];
+        onGateClick(p, g, row);
+      });
     });
 
-    const reward = document.getElementById("mReward");
-    const link = document.getElementById("mRewardLink");
-    if (unlocked) {
-      reward.hidden = false;
-      link.href = p.reward;
-    } else {
-      reward.hidden = true;
-      link.removeAttribute("href");
-    }
+    $("mDlState").textContent = unlocked ? "UNLOCKED" : "LOCKED";
+    const dl = $("mDownloads");
+    const fname = (src) => src.split("/").pop();
+    dl.innerHTML = p.files.map((f) => `
+      <li>
+        <a class="dl" ${unlocked ? `href="${esc(f.src)}" download` : `aria-disabled="true"`}>
+          <div class="dl-thumb"><img src="${esc(f.src)}" alt="" loading="lazy"></div>
+          <div class="dl-info">
+            <div class="h">${esc(f.label)}</div>
+            <div class="s">${esc(f.size)} &middot; ${esc(fname(f.src))}</div>
+          </div>
+          <div class="dl-act">${use(unlocked ? "i-dl" : "i-lock")}</div>
+        </a>
+      </li>
+    `).join("");
   }
 
-  function renderGate(p, g, i) {
-    const followed = isFollowed(p, g);
-    const initials = (g.handle || "?").replace(/[@_.]/g, "").slice(0, 2).toUpperCase();
-    return `
-      <div class="gate ${followed ? "done" : "pending"}"
-           style="--ac1:${g.ac1 || "#444"};--ac2:${g.ac2 || "#222"}"
-           data-i="${i}">
-        <div class="svc" data-svc="${g.svc}">${svgUse("i-" + g.svc)}</div>
-        <div class="handle">
-          <div class="avatar" style="background:linear-gradient(135deg,${g.ac1 || "#444"},${g.ac2 || "#222"})">${initials}</div>
-          <div class="name">${escapeHtml(g.handle)}</div>
-        </div>
-        <div class="go">${svgUse(followed ? "i-check" : "i-arrow")}</div>
-      </div>
-    `;
-  }
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-  }
-
-  /* Click flow:
-     - First click on a pending gate: open the social profile in a new tab,
-       and arm the gate. When the user comes back to this tab, mark followed.
-     - Click on a followed gate: toggle off (un-follow) for testing/reset. */
+  /* gate click flow */
   const armed = new WeakMap();
-
   function onGateClick(p, g, row) {
     if (isFollowed(p, g)) {
       setFollowed(p, g, false);
-      paintModal();
+      paint();
       return;
     }
     window.open(g.url, "_blank", "noopener");
     armed.set(row, { p, g });
-    row.classList.add("armed");
   }
-
-  // When window regains focus after the user visited the social site,
-  // confirm any armed gates as followed.
   function confirmArmed() {
-    if (!activeProduct) return;
-    const rows = document.querySelectorAll(".gate");
+    if (!active) return;
     let changed = false;
-    rows.forEach((row) => {
+    document.querySelectorAll(".gate").forEach((row) => {
       const a = armed.get(row);
-      if (a) {
-        setFollowed(a.p, a.g, true);
-        armed.delete(row);
-        changed = true;
-      }
+      if (a) { setFollowed(a.p, a.g, true); armed.delete(row); changed = true; }
     });
-    if (changed) paintModal();
+    if (changed) paint();
   }
   window.addEventListener("focus", confirmArmed);
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) confirmArmed();
-  });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) confirmArmed(); });
 
-  /* Modal close handlers */
+  /* close handlers */
   modal.addEventListener("click", (e) => {
-    if (e.target.dataset && "close" in e.target.dataset) closeModal();
+    const t = e.target;
+    if (t && t.dataset && "close" in t.dataset) closeModal();
+    if (t && t.closest && t.closest("[data-close]")) closeModal();
   });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !modal.hidden) closeModal();
-  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) closeModal(); });
 
-  /* Reset everything */
-  resetBtn.addEventListener("click", () => {
+  /* reset */
+  $("resetBtn").addEventListener("click", () => {
     Object.keys(state).forEach((k) => delete state[k]);
-    saveState();
+    save();
     renderGrid();
-    if (!modal.hidden) paintModal();
+    if (!modal.hidden) paint();
   });
 
   renderGrid();
