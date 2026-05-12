@@ -9,4 +9,7 @@ Place these files in this directory:
   TOUMEI_THUM.jpg     -- 透明になる 壁紙: gallery thumbnail / modal cover
   TOUMEI.zip          -- 透明になる 壁紙: unlock reward (downloaded after all 4 follows)
 
+  HAKONIWA_THUM.jpg   -- Hakoniwa 壁紙: gallery thumbnail / modal cover
+  HAKONIWA.zip        -- Hakoniwa 壁紙: unlock reward (downloaded after all 4 follows)
+
 To change filenames or add more items, edit /data.js.
