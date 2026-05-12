@@ -17,5 +17,19 @@ window.PGATE_DATA = [
       { svc: "yt", handle: "@Purukichi3",  url: "https://www.youtube.com/@Purukichi3" },
       { svc: "yt", handle: "@kakyoin_grp", url: "https://www.youtube.com/@kakyoin_grp" }
     ]
+  },
+  {
+    id: "farewell",
+    title: "Farewell 壁紙",
+    cover: "assets/FAREWELL_THUM.jpg",
+    files: [
+      { src: "assets/FAREWELL.zip", label: "FAREWELL.zip", size: "ZIP" }
+    ],
+    gates: [
+      { svc: "x",  handle: "@Purukichi3", url: "https://x.com/Purukichi3"                                                      },
+      { svc: "x",  handle: "@nasakicom",  url: "https://x.com/nasakicom"                                                       },
+      { svc: "yt", handle: "@Purukichi3", url: "http://www.youtube.com/channel/UCZXm5VwWsYCDu3BmAoyCF9w?sub_confirmation=1"    },
+      { svc: "yt", handle: "@nasakicom",  url: "http://www.youtube.com/channel/UCprRNPqcKEPaAhAbQmk58oQ?sub_confirmation=1"    }
+    ]
   }
 ];
