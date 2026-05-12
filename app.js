@@ -1,5 +1,5 @@
 (() => {
-  const STORAGE_KEY = "pgate.followed.v2";
+  const STORAGE_KEY = "torii.followed.v1";
   const DATA = window.PGATE_DATA || [];
 
   const $ = (id) => document.getElementById(id);

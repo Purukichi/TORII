@@ -1,4 +1,4 @@
-/* P-GATE — items
+/* TORII — items
  *
  * Drop the cover thumbnail and the ZIP into ./assets/ with the
  * filenames referenced below.  Add new items by appending objects.
