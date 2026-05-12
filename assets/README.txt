@@ -6,4 +6,7 @@ Place these files in this directory:
   FAREWELL_THUM.jpg   -- Farewell 壁紙: gallery thumbnail / modal cover
   FAREWELL.zip        -- Farewell 壁紙: unlock reward (downloaded after all 4 follows)
 
+  TOUMEI_THUM.jpg     -- 透明になる 壁紙: gallery thumbnail / modal cover
+  TOUMEI.zip          -- 透明になる 壁紙: unlock reward (downloaded after all 4 follows)
+
 To change filenames or add more items, edit /data.js.
